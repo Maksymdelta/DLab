@@ -105,10 +105,10 @@ public class TestCallable implements Callable<Boolean> {
     public Boolean call() throws Exception {
         
 		try {
-			final String notebookIp = createNotebook(notebookName);
-			testLibs();
+			final String notebookIp = "172.31.56.227";//createNotebook(notebookName);
+			//testLibs();
 
-			final DeployClusterDto deployClusterDto = createClusterDto();
+			//final DeployClusterDto deployClusterDto = createClusterDto();
 
 			final String actualClusterName = NamingHelper.getClusterName(
 					NamingHelper.getClusterInstanceNameForTestEmr(notebookName, clusterName, dataEngineType),
@@ -127,17 +127,17 @@ public class TestCallable implements Callable<Boolean> {
 			stopEnvironment();
 
 			if (fullTest) {
-				restartNotebookAndRedeployToTerminate(deployClusterDto);
+				//restartNotebookAndRedeployToTerminate(deployClusterDto);
 			}
-			if (deployClusterDto != null) {
-				terminateNotebook(deployClusterDto);
-			}
+			//if (deployClusterDto != null) {
+			//	terminateNotebook(deployClusterDto);
+			//}
 
 			// Create notebook from AMI
-			String notebookNewName = "AMI" + notebookName;
-			createNotebook(notebookNewName);
+			//String notebookNewName = "AMI" + notebookName;
+			//createNotebook(notebookNewName);
 
-			terminateNotebook(notebookNewName);
+			//terminateNotebook(notebookNewName);
 
 			LOGGER.info("{} All tests finished successfully", notebookName);
 			return true;
