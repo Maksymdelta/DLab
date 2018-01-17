@@ -59,6 +59,7 @@ if __name__ == "__main__":
         'edge_user_name'] + "-nb-SG"
     notebook_config['tag_name'] = notebook_config['service_base_name'] + '-Tag'
     notebook_config['dlab_ssh_user'] = os.environ['conf_os_user']
+    notebook_config['shared_ami_enabled'] = os.environ['conf_shared_ami_enabled']
 
     # generating variables regarding EDGE proxy on Notebook instance
     instance_hostname = get_instance_hostname(notebook_config['tag_name'], notebook_config['instance_name'])
@@ -174,22 +175,17 @@ if __name__ == "__main__":
         append_result("Failed to setup git credentials.", str(err))
         remove_ec2(notebook_config['tag_name'], notebook_config['instance_name'])
         sys.exit(1)
-
-    try:
-        print('[CREATING AMI]')
-        logging.info('[CREATING AMI]')
-        ami_id = get_ami_id_by_name(notebook_config['expected_ami_name'])
-        if ami_id == '':
-            print("Looks like it's first time we configure notebook server. Creating image.")
-            image_id = create_image_from_instance(tag_name=notebook_config['tag_name'],
-                                                  instance_name=notebook_config['instance_name'],
-                                                  image_name=notebook_config['expected_ami_name'])
-            if image_id != '':
-                print("Image was successfully created. It's ID is {}".format(image_id))
-    except Exception as err:
-        append_result("Failed installing users key.", str(err))
-        remove_ec2(notebook_config['tag_name'], notebook_config['instance_name'])
-        sys.exit(1)
+    
+    if notebook_config['shared_ami_enabled'] == 'true':
+        params = "--expected_ami_name {} --tag_name {} --instance_name {}" \
+            .format(notebook_config['expected_ami_name'], notebook_config['tag_name'], notebook_config['instance_name'])
+        try:
+            local("~/scripts/{}.py {}".format('common_create_ami', params))
+        except:
+            traceback.print_exc()
+            raise Exception
+    else:
+        logging.info('[IMAGE OF NOTEBOOK WILL BE CREATED BY USER]')
 
     # generating output information
     ip_address = get_instance_ip_address(notebook_config['tag_name'], notebook_config['instance_name']).get('Private')
