@@ -184,7 +184,7 @@ if __name__ == "__main__":
             traceback.print_exc()
             raise Exception
     else:
-        logging.info('[IMAGE OF NOTEBOOK WILL BE CREATED BY USER]')
+        append_result("Image of notebook will be created by USER")
 
     # generating output information
     ip_address = get_instance_ip_address(notebook_config['tag_name'], notebook_config['instance_name']).get('Private')
